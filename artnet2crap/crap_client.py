@@ -60,6 +60,6 @@ async def crap_client_coroutine(loop, framebuffer: bytearray):
     while loop.is_running():
         # wwlog.debug('Send:', framebuffer)
         transport.sendto(framebuffer)
-        await asyncio.sleep(1.0 / 12.5)
+        await asyncio.sleep(1.0 / 44.1)
     
     transport.close()

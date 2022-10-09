@@ -22,6 +22,7 @@ class ArtNetPacket(object):
         self.sequence = sequence
         self.physical = physical
         self.universe = universe
+        self.length = length
         self.dmx = dmx
         self.opcode = opcode
         self.version = version
@@ -81,18 +82,35 @@ def decode_artnet_packet(data:bytearray) -> ArtNetPacket:
 
 class ArtNetServerProtocol(asyncio.Protocol):
 
-    def __init__(self):
+    def __init__(self, frame_buffer):
         log.info('Art-Net server protocol __init__() ...')
+        self.frame_buffer = frame_buffer
         super().__init__()
 
     def connection_made(self, transport):
+        log.debug("Art-Net connection made")
         self.transport = transport
+
+    async def process_packet(self, artnet_packet):
+        new_vals = artnet_packet.dmx
+        start_index = 480 * artnet_packet.universe
+        log.debug('start-index: %d, dmx: %s' % (start_index, len(new_vals)))
+        for index, value in enumerate(new_vals):
+            if index >= 480:
+                break
+            self.frame_buffer[start_index + index] = value
+        return
 
     def datagram_received(self, data, addr):
         try:
             artnet_packet = decode_artnet_packet(data)
+            log.debug('Art-Net DMX received: lenght: %d, universe: %s, opcode: %x' % (artnet_packet.length, artnet_packet.universe, artnet_packet.opcode))
+            asyncio.ensure_future(self.process_packet(artnet_packet))
         except ArtNetPollReceived:
             log.debug("Art-Net poll (opcode 0x2000) received.")
+            return
+        except asyncio.queues.QueueFull:
+            log.debug('Queue full')
             return
 
         dmx = artnet_packet.dmx
