@@ -54,7 +54,7 @@ class CrapClientProtocol(asyncio.DatagramProtocol):
 async def crap_client_coroutine(loop, framebuffer: bytearray):
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: CrapClientProtocol(loop),
-        remote_addr=('10.0.1.39', 1337)
+        remote_addr=('matehost', 1337)
     )
     # res = await connect()
     while loop.is_running():
