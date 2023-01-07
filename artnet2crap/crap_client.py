@@ -51,15 +51,17 @@ class CrapClientProtocol(asyncio.DatagramProtocol):
         log.error("CRAP UDP connection lost.")
 
 
-async def crap_client_coroutine(loop, framebuffer: bytearray):
+async def crap_client_coroutine(loop, framebuffer: bytearray, last_received: float):
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: CrapClientProtocol(loop),
         remote_addr=('matehost', 1337)
     )
     # res = await connect()
     while loop.is_running():
-        # wwlog.debug('Send:', framebuffer)
-        transport.sendto(framebuffer)
+        # Only send the framebuffer if there was at least one UDP datagram in the last
+        # 5 seconds
+        if (loop.time() - last_received) < 5.0:
+            transport.sendto(framebuffer)
         await asyncio.sleep(1.0 / 44.1)
     
     transport.close()

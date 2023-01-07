@@ -82,9 +82,10 @@ def decode_artnet_packet(data:bytearray) -> ArtNetPacket:
 
 class ArtNetServerProtocol(asyncio.Protocol):
 
-    def __init__(self, frame_buffer):
+    def __init__(self, frame_buffer, last_received):
         log.info('Art-Net server protocol __init__() ...')
         self.frame_buffer = frame_buffer
+        self.last_received = last_received
         super().__init__()
 
     def connection_made(self, transport):
@@ -102,6 +103,8 @@ class ArtNetServerProtocol(asyncio.Protocol):
         return
 
     def datagram_received(self, data, addr):
+        # A datagram has been received, set the the last_received timestamp to now.
+        self.last_received = asyncio.get_event_loop().time()
         try:
             artnet_packet = decode_artnet_packet(data)
             log.debug('Art-Net DMX received: lenght: %d, universe: %s, opcode: %x' % (artnet_packet.length, artnet_packet.universe, artnet_packet.opcode))
