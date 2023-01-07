@@ -35,7 +35,7 @@ def main():
     loop = asyncio.get_event_loop()
     coro = create_art_net_coro(frame_buffer=framebuffer, last_received=last_received)
     transport, _ = loop.run_until_complete(coro)
-    asyncio.ensure_future(crap_client_coroutine(loop, framebuffer))
+    asyncio.ensure_future(crap_client_coroutine(loop, framebuffer, last_received))
     loop.run_forever()
 
 
