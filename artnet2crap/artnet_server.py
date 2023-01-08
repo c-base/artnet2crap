@@ -57,7 +57,7 @@ def decode_artnet_packet(data:bytearray) -> ArtNetPacket:
     try:
         universe = (data[14] & 0x00FF) | ((data[15] << 8) & 0xFF00)
     except:
-        log.info("got udp %s" % repr(data))
+        log.debug("got udp %s" % repr(data))
 
     # length, high byte first
     length = ((data[16] << 8) & 0xFF00) | (data[17] & 0x00FF)
@@ -104,7 +104,6 @@ class ArtNetServerProtocol(asyncio.Protocol):
         return
 
     def datagram_received(self, data, addr):
-        log.info("rcvd")
         # A datagram has been received, set the the last_received timestamp to now.
         self.last_received.set(time.monotonic())
         try:

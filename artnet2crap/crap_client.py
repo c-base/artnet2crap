@@ -66,9 +66,10 @@ async def crap_client_coroutine(loop, framebuffer: bytearray, last_received):
         last_time = last_received.get()
         if (loop.time() - last_time) < 5.0:
             transport.sendto(framebuffer)
-            log.info("sent was new: %f - %f = %f" % (last_time, loop.time(), loop.time() - last_time))
+            # log.info("sent was new: %f - %f = %f" % (last_time, loop.time(), loop.time() - last_time))
         else:
-            log.info("Packet not sent %f - %f = %f" % (last_time, loop.time(), loop.time() - last_time))
+            pass
+            # log.info("Packet not sent %f - %f = %f" % (last_time, loop.time(), loop.time() - last_time))
         await asyncio.sleep(1.0 / 44.1)
     
     transport.close()

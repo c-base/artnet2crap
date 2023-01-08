@@ -3,8 +3,8 @@ import time
 import random
 
 # THESE ARE MOST LIKELY THE VALUES YOU WILL BE NEEDING
-# target_ip = '10.0.0.130'		# typically in 2.x or 10.x range
-target_ip = '127.0.0.1'		# typically in 2.x or 10.x range
+target_ip = '10.0.1.39'		# typically in 2.x or 10.x range
+#target_ip = '127.0.0.1'		# typically in 2.x or 10.x range
 
 universe = 0 										# see docs
 packet_size = 160*3								# it is not necessary to send whole universe
