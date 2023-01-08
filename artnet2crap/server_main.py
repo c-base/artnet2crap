@@ -7,7 +7,7 @@ from artnet2crap.crap_client import crap_client_coroutine
 from artnet2crap.framebuffer import framebuffer, last_received
 
 log = logging.getLogger()
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 handler = logging.StreamHandler(sys.stderr)
 handler.setLevel(logging.INFO)

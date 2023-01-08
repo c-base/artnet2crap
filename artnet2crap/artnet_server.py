@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import logging
+import time
 
 log = logging.getLogger(__name__)
 
@@ -103,8 +104,9 @@ class ArtNetServerProtocol(asyncio.Protocol):
         return
 
     def datagram_received(self, data, addr):
+        log.info("rcvd")
         # A datagram has been received, set the the last_received timestamp to now.
-        self.last_received = asyncio.get_event_loop().time()
+        self.last_received.set(time.monotonic())
         try:
             artnet_packet = decode_artnet_packet(data)
             log.debug('Art-Net DMX received: lenght: %d, universe: %s, opcode: %x' % (artnet_packet.length, artnet_packet.universe, artnet_packet.opcode))

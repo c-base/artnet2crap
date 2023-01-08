@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from os import environ
 
 log = logging.getLogger(__name__)
 
@@ -51,17 +52,23 @@ class CrapClientProtocol(asyncio.DatagramProtocol):
         log.error("CRAP UDP connection lost.")
 
 
-async def crap_client_coroutine(loop, framebuffer: bytearray, last_received: float):
+async def crap_client_coroutine(loop, framebuffer: bytearray, last_received):
+    hostname = environ.get('MATELIGHT_HOSTNAME', 'matehost')
+    log.info('Creating CRAP connection to `%s:1337`' % hostname)
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: CrapClientProtocol(loop),
-        remote_addr=('matehost', 1337)
+        remote_addr=(hostname, 1337)
     )
     # res = await connect()
     while loop.is_running():
         # Only send the framebuffer if there was at least one UDP datagram in the last
         # 5 seconds
-        if (loop.time() - last_received) < 5.0:
+        last_time = last_received.get()
+        if (loop.time() - last_time) < 5.0:
             transport.sendto(framebuffer)
+            log.info("sent was new: %f - %f = %f" % (last_time, loop.time(), loop.time() - last_time))
+        else:
+            log.info("Packet not sent %f - %f = %f" % (last_time, loop.time(), loop.time() - last_time))
         await asyncio.sleep(1.0 / 44.1)
     
     transport.close()
